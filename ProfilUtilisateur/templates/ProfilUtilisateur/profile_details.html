@@ -1,0 +1,55 @@
+{% extends 'ProfilUtilisateur/base.html' %}
+
+{% block title %}Profil de {{ utilisateur.username }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <!-- Image de couverture -->
+  <!-- Section Profil Principal -->
+  <div class="card shadow-lg rounded">
+    <div class="card-header bg-primary text-white text-center">
+      <h2>{{ utilisateur.username }}</h2>
+      <p class="mb-0">{{ utilisateur.bio|default:"Aucune biographie ajoutée" }}</p>
+    </div>
+    <div class="card-body">
+      <div class="row align-items-center">
+        <!-- Image de profil -->
+        <div class="col-md-3 text-center">
+          {% if utilisateur.image %}
+          <img src="{{ utilisateur.image.url }}" alt="Image de profil" class="rounded-circle img-thumbnail shadow"
+               style="width: 180px; height: 180px; object-fit: cover;">
+          {% else %}
+          <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center"
+               style="width: 180px; height: 180px;">
+            <p class="text-muted">Pas d'image</p>
+          </div>
+          {% endif %}
+        </div>
+        <!-- Informations principales -->
+        <div class="col-md-9">
+          <h5 class="text-primary">Informations Personnelles</h5>
+          <p><strong>Prénom :</strong> {{ utilisateur.first_name }}</p>
+          <p><strong>Nom :</strong> {{ utilisateur.last_name }}</p>
+          <p><strong>Email :</strong> {{ utilisateur.email }}</p>
+          <p><strong>Téléphone :</strong> {{ utilisateur.telephone }}</p>
+          <p><strong>Date de naissance :</strong> {{ utilisateur.date_naissance }}</p>
+          <p><strong>Adresse :</strong> {{ utilisateur.adresse }}</p>
+          <p><strong>Genre :</strong> {{ utilisateur.get_genre_display }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer text-center">
+      <a href="{% url 'user_list' %}" class="btn btn-secondary">Retour à la Liste</a>
+    </div>
+  </div>
+
+  <!-- Section Informations Supplémentaires -->
+  <div class="card shadow-lg rounded mt-4">
+    <div class="card-body text-center">
+      <h5 class="text-primary">Informations Supplémentaires</h5>
+      <p><strong>Date d'inscription :</strong> {{ utilisateur.date_joined|date:"d M Y" }}</p>
+      <p><strong>Dernière connexion :</strong> {{ utilisateur.last_login|date:"d M Y H:i" }}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

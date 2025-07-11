@@ -1,0 +1,144 @@
+{% extends 'ProfilUtilisateur/base.html' %}
+
+{% block title %}Profil de {{ profile.username }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="position-relative text-center mb-4 fade-in">
+      {% if profile.cover_image %}
+          <img id="coverPreview" src="{{ profile.cover_image.url }}" alt="Image de couverture"
+              class="img-fluid rounded shadow" style="width: 100%; max-height: 250px; object-fit: cover;">
+      {% endif %}
+
+      <!-- Icône de modification de la photo de couverture -->
+      <label for="coverImageInput" class="btn btn-light position-absolute cover-edit-btn" style="top: 10px; right: 10px; cursor: pointer;">
+          <i class="fas fa-pencil-alt"></i>
+      </label>
+      <input type="file" id="coverImageInput" class="d-none" accept="image/*">
+
+      <!-- Formulaire automatique pour modification -->
+      <form id="coverImageForm" method="post" enctype="multipart/form-data" action="{% url 'change_profile_image' %}">
+        {% csrf_token %}
+        <input type="file" name="cover_image" id="coverImageInput" class="d-none" accept="image/*">
+      </form>
+      <!-- Photo de profil intégrée à la couverture -->
+      <div class="position-absolute" style="bottom: -60px; left: 50%; transform: translateX(-50%);">
+          {% if profile.image %}
+              <img src="{{ profile.image.url }}" alt="Image de profil" class="rounded-circle img-thumbnail border shadow"
+                  style="width: 120px; height: 120px; object-fit: cover;">
+          {% else %}
+              <div class="rounded-circle border bg-light d-flex align-items-center justify-content-center shadow"
+                  style="width: 120px; height: 120px;">
+                  <p class="text-muted">Pas d'image</p>
+              </div>
+          {% endif %}
+      </div>
+  </div><br><br>
+  <!-- Section principale du profil -->
+  <div class="card shadow p-4 text-center">
+    <h2 class="text-primary mt-4">{{ profile.username }}</h2>
+    <p class="text-muted">{{ profile.telephone }}</p>
+    <p class="text-muted">{{ profile.adresse }}</p>
+    <a href="{% url 'edit_profile' %}" class="btn btn-outline-primary mt-2">Modifier le profil</a>
+  </div>
+
+  <!-- Bio -->
+  <div class="card shadow mt-4 p-4 fade-in">
+    <h3 class="text-primary">Bio</h3>
+    <p>{{ profile.bio }}</p>
+  </div>
+
+  <!-- Réseaux sociaux avec affichage dynamique -->
+  <div class="card shadow mt-4 p-4 text-center">
+    <h3 class="text-primary">Retrouvez-moi</h3>
+    <div class="d-flex justify-content-center gap-3">
+      {% if profile.reseaux_sociaux %}
+        {% if profile.reseaux_sociaux.facebook %}
+          <a href="https://facebook.com/{{ profile.reseaux_sociaux.facebook }}" class="btn btn-outline-primary" target="_blank">
+            <i class="fab fa-facebook-f"></i> Facebook
+          </a>
+        {% endif %}
+        {% if profile.reseaux_sociaux.instagram %}
+          <a href="https://instagram.com/{{ profile.reseaux_sociaux.instagram }}" class="btn btn-outline-danger" target="_blank">
+            <i class="fab fa-instagram"></i> Instagram
+          </a>
+        {% endif %}
+        {% if profile.reseaux_sociaux.twitter %}
+          <a href="https://twitter.com/{{ profile.reseaux_sociaux.twitter }}" class="btn btn-outline-info" target="_blank">
+            <i class="fab fa-x-twitter"></i> Twitter/X
+          </a>
+        {% endif %}
+        {% if not profile.reseaux_sociaux.facebook and not profile.reseaux_sociaux.instagram and not profile.reseaux_sociaux.twitter %}
+          <p class="text-muted">Aucun réseau social renseigné.</p>
+        {% endif %}
+      {% else %}
+        <p class="text-muted">Aucun réseau social renseigné.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Liens personnels -->
+  <div class="card shadow mt-4 p-4 text-center">
+    <h3 class="text-primary">Liens</h3>
+    <div class="d-flex flex-column flex-md-row justify-content-center gap-2 gap-md-3">
+      <a href="{{ profile.shop_link }}" class="btn btn-success btn-block btn-lg flex-fill mb-2 mb-md-0">Voir ma boutique</a>
+      <a href="{{ profile.website_link }}" class="btn btn-warning btn-block btn-lg flex-fill mb-2 mb-md-0">Mon site web</a>
+      {% if user.is_authenticated and user.is_superuser %}
+        <a href="/admin/" class="btn btn-dark btn-block btn-lg flex-fill">Accéder à l'espace admin</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Script pour mise à jour instantanée -->
+<script>
+  document.getElementById('coverImageInput').addEventListener('change', function (event) {
+      var file = event.target.files[0];
+      if (file) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+              document.getElementById('coverPreview').src = e.target.result; // Mise à jour visuelle
+              document.getElementById('coverImageHiddenInput').value = file; // Ajout au formulaire
+              document.getElementById('coverImageForm').submit(); // Envoi automatique
+          };
+          reader.readAsDataURL(file);
+      }
+  });
+</script>
+
+<style>
+  @media (max-width: 768px) {
+    .btn-lg, .btn-block {
+      font-size: 1.1rem;
+      padding: 0.75rem 1rem;
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+    .card h2, .card h3 {
+      font-size: 1.3rem;
+    }
+    .card p, .btn {
+      font-size: 1rem;
+    }
+    .d-flex.gap-3, .d-flex.gap-2 {
+      flex-direction: column !important;
+      gap: 0.5rem !important;
+    }
+    .cover-edit-btn {
+      padding: 0.3rem 0.7rem !important;
+      font-size: 1.1rem !important;
+      top: 5px !important;
+      right: 5px !important;
+      border-radius: 50% !important;
+      min-width: 40px;
+      min-height: 40px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+</style>
+
+{% endblock %}

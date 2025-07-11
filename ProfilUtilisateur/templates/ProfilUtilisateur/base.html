@@ -1,0 +1,166 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Gestion Utilisateur{% endblock %}</title>
+
+  <!-- Bootstrap & Font Awesome -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* Mode Sombre */
+    body {
+      background-color: #f8f9fa;
+      color: #343a40;
+      padding-top: 70px;
+      transition: background 0.3s, color 0.3s;
+    }
+    .dark-mode {
+      background-color: #212529;
+      color: #0e0f0f;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: linear-gradient(to right, #007bff, #0056b3);
+    }
+
+    /* Bouton mode sombre */
+    .btn-toggle-dark {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+    }
+
+    /* Animation des cartes */
+    .card:hover {
+      transform: scale(1.05);
+      transition: 0.3s;
+    }
+
+    @media (max-width: 768px) {
+      .btn-lg, .btn-block, .btn, button {
+        font-size: 1.1rem;
+        padding: 0.75rem 1rem;
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+      .card h2, .card h3, h2, h3 {
+        font-size: 1.3rem;
+      }
+      .card p, .btn, p, label, input, select, textarea {
+        font-size: 1rem;
+      }
+      .d-flex.gap-3, .d-flex.gap-2, .row, .form-row {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+      }
+      .container, .card, .form-group, .form-control {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+      }
+      .navbar-toggler {
+        padding: 0.3rem 0.7rem !important;
+        font-size: 1.2rem !important;
+        border-radius: 0.3rem !important;
+        min-width: 44px;
+        min-height: 44px;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  </style>
+  
+</head>
+<body>
+
+  <!-- Navbar améliorée -->
+  <nav class="navbar navbar-expand-lg navbar-dark shadow fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <i class="fas fa-user-shield"></i> MOYA S.A
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <!-- Boutons principaux -->
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'home' %}"><i class="fas fa-home"></i> Accueil</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'apropos' %}"><i class="fas fa-info-circle"></i> À propos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'contact' %}"><i class="fas fa-envelope"></i> Contact</a>
+          </li>
+
+          {% if user.is_authenticated %}
+            <!-- Menu déroulant Mon Compte -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-toggle="dropdown">
+                <i class="fas fa-user"></i> Mon Compte
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="{% url 'profile' slug=user.slug %}"><i class="fas fa-user-circle"></i> Voir mon profil</a>
+                <a class="dropdown-item" href="#"><i class="fas fa-cogs"></i> Paramètres</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+              </div>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Connexion</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'register' %}"><i class="fas fa-user-plus"></i> Inscription</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenu principal -->
+  <div class="container">
+    {% block content %}
+    {% endblock %}
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-5 text-center bg-dark text-white py-3">
+    <p>&copy; 2025 MOYA SA. Tous droits réservés. heritierndjungu91@gmail.com ,louismitshabu4@gmail.com</p>
+    <p>
+      <a href="#" class="text-info">Confidentialité</a> | 
+      <a href="#" class="text-info">Termes</a> | 
+      <a href="#" class="text-info">Contactez-nous</a>
+    </p>
+  </footer>
+
+  <!-- Mode sombre toggle -->
+  <button class="btn btn-secondary btn-toggle-dark"><i class="fas fa-adjust"></i> Mode Sombre</button>
+
+  <script>
+    document.querySelector('.btn-toggle-dark').addEventListener('click', function () {
+      document.body.classList.toggle('dark-mode');
+    });
+  </script>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
